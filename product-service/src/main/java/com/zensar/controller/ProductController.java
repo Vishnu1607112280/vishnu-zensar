@@ -17,8 +17,10 @@ import org.springframework.web.client.RestTemplate;
 import com.zensar.entity.Coupon;
 import com.zensar.entity.CouponClassList;
 import com.zensar.entity.Product;
-import com.zensar.springbootdemo.RestClient.CouponRestClient;
 import com.zensar.services.ProductService;
+import com.zensar.springbootdemo.restclient.CouponRestClient;
+
+import io.github.resilience4j.retry.annotation.Retry;
 
 @RestController
 @RequestMapping("/products")
@@ -34,6 +36,7 @@ public class ProductController {
 	private CouponRestClient restClient;
 
 	@PostMapping("/")
+	@Retry(name = "productapi", fallbackMethod = "myFallbackMethod")
 	public Product insertProduct(@RequestBody Product product) {
 
 		// ResponseEntity<Coupon> coupon =
@@ -48,6 +51,10 @@ public class ProductController {
 
 		return productService.insertProduct(product);
 
+	}
+
+	public Product myFallbackMethod(Throwable t) {
+		return new Product();
 	}
 
 	@GetMapping("/getCoupons")
