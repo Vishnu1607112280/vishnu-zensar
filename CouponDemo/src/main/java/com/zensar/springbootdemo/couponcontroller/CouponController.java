@@ -1,7 +1,5 @@
 package com.zensar.springbootdemo.couponcontroller;
 
-package com.zensar.springbootdemo.couponcontroller;
-
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
