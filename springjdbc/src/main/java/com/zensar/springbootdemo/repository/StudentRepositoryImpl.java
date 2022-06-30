@@ -12,11 +12,11 @@ import com.zensar.springbootdemo.extractor.StudentResultExtractor;
 @Repository("studentRepository")
 public class StudentRepositoryImpl implements StudentRepository {
 
-	// private JdbcTemplate jdbcTemplate = new JdbcTemplate(getDataSource()); //.xml
-	// file
+	// private JdbcTemplate jdbcTemplate = new JdbcTemplate(getDataSource()); //bean
+	// was written
 
 	@Autowired
-	private JdbcTemplate jdbcTemplate; // JDBCTEMPLATE CLASS
+	private JdbcTemplate jdbcTemplate; // JDBCTEMPLATE bean autowired here JDBCTEMPLATE class is in JDBC package
 
 	public JdbcTemplate getJdbcTemplate() {
 		return jdbcTemplate;
@@ -77,8 +77,8 @@ public class StudentRepositoryImpl implements StudentRepository {
 	/*
 	 * public DataSource getDataSource() { String url =
 	 * "jdbc:mysql://localhost:3306/jdbcdb"; String username = "root"; String
-	 * password = "Ambika@91"; DataSource dataSource = new
-	 * DriverManagerDataSource(url, username, password); return dataSource; }
+	 * password = "root"; DataSource dataSource = new DriverManagerDataSource(url,
+	 * username, password); return dataSource; }
 	 */ // Same implementation done in .xml file using beans
 
 }
