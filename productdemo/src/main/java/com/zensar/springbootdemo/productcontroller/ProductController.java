@@ -57,10 +57,6 @@ public class ProductController {
 	@PostMapping("/products")
 	public ResponseEntity<ProductDto> insert(@RequestBody ProductDto productDto) {
 
-		// restClient.getCoupon(productDto.get)
-		CouponDto couponDto = restClient.getCoupon(productDto.getCouponCode());
-		productDto.setProductPrice(productDto.getProductPrice() - couponDto.getDiscount());
-
 		// return productService.insert(productDto);
 		return new ResponseEntity<ProductDto>(productService.insert(productDto), HttpStatus.CREATED);
 	} // connects with coupon service to access couponCode
