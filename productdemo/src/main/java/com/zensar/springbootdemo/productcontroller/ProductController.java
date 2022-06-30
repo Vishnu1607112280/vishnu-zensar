@@ -1,6 +1,5 @@
 package com.zensar.springbootdemo.productcontroller;
 
-
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,16 +17,24 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.zensar.springbootdemo.productdto.CouponDto;
 import com.zensar.springbootdemo.productdto.ProductDto;
-import com.zensar.springbootdemo.productserivce.ProductService;
+import com.zensar.springbootdemo.restclient.CouponRestClient;
+import com.zensar.springbootdemo.productservice.ProductService;
 
 @RestController
-@RequestMapping(value = "/product-api", produces = { MediaType.APPLICATION_JSON_VALUE,
-		MediaType.APPLICATION_XML_VALUE }, consumes = { MediaType.APPLICATION_JSON_VALUE,
-				MediaType.APPLICATION_XML_VALUE })
+/*
+ * @RequestMapping(value = "/product-api", produces = {
+ * MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE }, consumes
+ * = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
+ */
+@RequestMapping("product-api")
 public class ProductController {
 	@Autowired
 	private ProductService productService;
+
+	@Autowired
+	private CouponRestClient restClient;
 
 	@GetMapping("/products/{productId}")
 	public ResponseEntity<ProductDto> getProduct(@PathVariable("productId") int productId) {
@@ -35,15 +42,28 @@ public class ProductController {
 	}
 
 	@GetMapping("/products")
-	public ResponseEntity<List<ProductDto>> getProducts(@RequestParam(value="pageNumber",required = false,defaultValue = "0")int pageNumber,@RequestParam(value="pageSize",required = false,defaultValue = "10")int pageSize,@RequestParam(value="sortBy",required=false,defaultValue = "productId")String sortBy,@RequestParam(value="dir",required = false,defaultValue = "DESC")Direction dir) {
-		//return new ResponseEntity<List<ProductDto>>(productService.getProducts(pageNumber,pageSize), HttpStatus.OK);
-		return new ResponseEntity<List<ProductDto>>(productService.getProducts(pageNumber,pageSize,sortBy,dir), HttpStatus.OK);
+	public ResponseEntity<List<ProductDto>> getProducts(
+			@RequestParam(value = "pageNumber", required = false, defaultValue = "0") int pageNumber,
+			@RequestParam(value = "pageSize", required = false, defaultValue = "10") int pageSize,
+			@RequestParam(value = "sortBy", required = false, defaultValue = "productId") String sortBy,
+			@RequestParam(value = "dir", required = false, defaultValue = "DESC") Direction dir) {
+		// return new
+		// ResponseEntity<List<ProductDto>>(productService.getProducts(pageNumber,pageSize),
+		// HttpStatus.OK);
+		return new ResponseEntity<List<ProductDto>>(productService.getProducts(pageNumber, pageSize, sortBy, dir),
+				HttpStatus.OK);
 	}
 
 	@PostMapping("/products")
 	public ResponseEntity<ProductDto> insert(@RequestBody ProductDto productDto) {
+
+		// restClient.getCoupon(productDto.get)
+		CouponDto couponDto = restClient.getCoupon(productDto.getCouponCode());
+		productDto.setProductPrice(productDto.getProductPrice() - couponDto.getDiscount());
+
+		// return productService.insert(productDto);
 		return new ResponseEntity<ProductDto>(productService.insert(productDto), HttpStatus.CREATED);
-	}
+	} // connects with coupon service to access couponCode
 
 	@PutMapping("/products/{productId}")
 	public ResponseEntity<String> update(@PathVariable("productId") int productId, @RequestBody ProductDto product) {
@@ -74,6 +94,13 @@ public class ProductController {
 			@PathVariable("productName") String productName, @PathVariable("productPrice") int productPrice) {
 		return new ResponseEntity<List<ProductDto>>(
 				productService.getByProductNameOrProductPrice(productName, productPrice), HttpStatus.OK);
+	}
+
+	@GetMapping("/products/order/{productName}")
+	public ResponseEntity<List<ProductDto>> getByProductNameOrderByProductQuantity(
+			@PathVariable("productName") String productName) {
+		return new ResponseEntity<List<ProductDto>>(productService.getByProductNameOrderByProductQuantity(productName),
+				HttpStatus.OK);
 	}
 
 }
