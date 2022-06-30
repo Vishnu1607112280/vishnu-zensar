@@ -1,5 +1,5 @@
 server:
-  port: 2345
+  port: 4763
 spring:
   datasource:
     url: jdbc:mysql://localhost:3306/javabatch
@@ -19,9 +19,9 @@ management:
         include:
         - '*'
       base-path: /myactuator
-  #info:
-   # env:
-    #  enabled: true
+  info:
+    env:
+      enabled: true
 logging:
   level:
     com:
